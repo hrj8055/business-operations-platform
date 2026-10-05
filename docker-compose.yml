@@ -4,15 +4,15 @@ services:
     container_name: bop_postgres
     restart: always
     environment:
-      POSTGRES_USER: bop_user
-      POSTGRES_PASSWORD: bop_password
-      POSTGRES_DB: bop_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U bop_user -d bop_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -22,7 +22,10 @@ services:
     container_name: bop_app
     restart: always
     environment:
-      DATABASE_URL: postgresql+psycopg2://bop_user:bop_password@db:5432/bop_db
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+      ALGORITHM: ${ALGORITHM}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES}
     ports:
       - "8000:8000"
     depends_on:

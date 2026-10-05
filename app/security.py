@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 from passlib.context import CryptContext
 from jose import jwt, JWTError
@@ -7,9 +8,9 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 
-SECRET_KEY = "change-this-to-a-long-random-secret-in-production"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-only-insecure-fallback-key")
+ALGORITHM = os.environ.get("ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
