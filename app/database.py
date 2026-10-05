@@ -1,7 +1,12 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql+psycopg2://bop_user:bop_password@localhost:5432/bop_db"
+DATABASE_URL = os.environ.get(
+    "DATABASE_URL",
+    "postgresql+psycopg2://bop_user:bop_password@localhost:5432/bop_db",
+)
 
 engine = create_engine(DATABASE_URL)
 
@@ -16,4 +21,3 @@ def get_db():
         yield db
     finally:
         db.close()
-    
