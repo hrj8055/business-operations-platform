@@ -5,6 +5,9 @@ from sqlalchemy.orm import Session
 from app import models, schemas, security
 from app.database import engine, get_db
 from app.services import employee_service, user_service
+from app.logging_config import setup_logging
+
+setup_logging()
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -67,5 +70,4 @@ def delete_employee(
     current_user: models.User = Depends(security.get_current_user),
 ):
     employee_service.delete_employee(db, employee_id)
-    
     return {"message": "Employee deleted"}
