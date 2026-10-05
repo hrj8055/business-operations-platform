@@ -33,3 +33,17 @@ def setup_database():
 @pytest.fixture
 def client():
     return TestClient(app)
+
+
+@pytest.fixture
+def auth_headers(client):
+    client.post(
+        "/register",
+        json={"username": "testuser", "password": "TestPass123"},
+    )
+    response = client.post(
+        "/login",
+        data={"username": "testuser", "password": "TestPass123"},
+    )
+    token = response.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}

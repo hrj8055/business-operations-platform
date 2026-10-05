@@ -1,4 +1,4 @@
-def test_create_employee(client):
+def test_create_employee(client, auth_headers):
     response = client.post(
         "/employees/",
         json={
@@ -7,6 +7,7 @@ def test_create_employee(client):
             "department": "Engineering",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     assert response.status_code == 200
     data = response.json()
@@ -15,7 +16,7 @@ def test_create_employee(client):
     assert "id" in data
 
 
-def test_create_employee_duplicate_email(client):
+def test_create_employee_duplicate_email(client, auth_headers):
     client.post(
         "/employees/",
         json={
@@ -24,6 +25,7 @@ def test_create_employee_duplicate_email(client):
             "department": "Sales",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     response = client.post(
         "/employees/",
@@ -33,6 +35,7 @@ def test_create_employee_duplicate_email(client):
             "department": "Marketing",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     assert response.status_code == 400
     assert response.json()["detail"] == "An employee with this email already exists"
@@ -43,7 +46,7 @@ def test_read_employee_not_found(client):
     assert response.status_code == 404
 
 
-def test_read_employees_list(client):
+def test_read_employees_list(client, auth_headers):
     client.post(
         "/employees/",
         json={
@@ -52,6 +55,7 @@ def test_read_employees_list(client):
             "department": "HR",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     response = client.get("/employees/")
     assert response.status_code == 200
@@ -60,7 +64,7 @@ def test_read_employees_list(client):
     assert data[0]["full_name"] == "Carol Test"
 
 
-def test_update_employee(client):
+def test_update_employee(client, auth_headers):
     create_response = client.post(
         "/employees/",
         json={
@@ -69,19 +73,21 @@ def test_update_employee(client):
             "department": "Finance",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     employee_id = create_response.json()["id"]
 
     update_response = client.patch(
         f"/employees/{employee_id}",
         json={"department": "Operations"},
+        headers=auth_headers,
     )
     assert update_response.status_code == 200
     assert update_response.json()["department"] == "Operations"
     assert update_response.json()["full_name"] == "Dave Test"
 
 
-def test_delete_employee(client):
+def test_delete_employee(client, auth_headers):
     create_response = client.post(
         "/employees/",
         json={
@@ -90,10 +96,11 @@ def test_delete_employee(client):
             "department": "Legal",
             "is_active": True,
         },
+        headers=auth_headers,
     )
     employee_id = create_response.json()["id"]
 
-    delete_response = client.delete(f"/employees/{employee_id}")
+    delete_response = client.delete(f"/employees/{employee_id}", headers=auth_headers)
     assert delete_response.status_code == 200
 
     get_response = client.get(f"/employees/{employee_id}")
